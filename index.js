@@ -1,6 +1,6 @@
 var awsIot = require('aws-iot-device-sdk');
 var SerialPort = require("serialport");
-var serialPort = new SerialPort("COM1", { baudRate: 115200 });
+var serialPort = new SerialPort("COM14", { baudRate: 115200 });
 
 
 var clientTokenUpdate;
@@ -26,71 +26,91 @@ var sys = {
     "deviceid":null
   }
 }
-var buffer = {
-    "container": [{
-      "action": "turn on",
-      "device": "light",
-      "id": "01",
-      "room": "living room",
-      "mode": "set",
-      "sessionid": "01",
-      "lux": "100"
-    },
-      {
+var buffer = null;
+//        {
+//       "container": [{
+//         "action": "turnon",
+//         "deviceid": "light",
+//         "device":"1",
+//         "id": "01",
+//         "room": "livingroom",
+//         "mode": "set",
+//         "sessionid": "01",
+//         "lux": "100",
+//         "all": 1
+//     },
+//       {
+//         "action": "turn on",
+//         "device": "light",
+//         "device":"1",
+//         "id": "01",
+//         "room": "living room",
+//         "mode": "set",
+//         "sessionid": "01",
+//         "lux": "100",
+//         "all": 1
+//       },
+//       {
+//         "action": "turn on",
+//         "device": "light",
+//         "device":"1",
+//         "id": "01",
+//         "room": "living room",
+//         "mode": "set",
+//         "sessionid": "01",
+//         "lux": "100",
+//         "all": 1
+//       }
+//     ],
+//     "sync":
+//     {
+//       "update" = 1
+//     }
+// }
+//**************lang nghe thingShadow********************
+thingShadows.register('Thang-Test', {}, function () {
+});
 
-      }
-    ],
-
-    "update":{
-      "seri":"0",
-      "action": "turn off",
-      "device": "Fan",
-      "id": "01",
-      "room": "Beb room",
-      "mode": "set",
-      "lux": "100"
-    }
-  }
-// lang nghe thingShadow
+thingShadows.on('delta',
+      function(thingName, stateObject) {
+          buffer = stateObject.state.Data;
+          console.log("IoT buffer: " + JSON.stringify(buffer));
+      });
 
 thingShadows.on('delta',
     function(thingName, stateObject) {
-       console.log('SSID: '+ JSON.stringify(stateObject.state.Data.container[0].sessionid)); // dang string
-       console.log('SSID2: '+ stateObject.state.Data.container[0].sessionid); // dang json
-       sessionid = stateObject.state.Data.container[0].sessionid;
-       sessionidnumber = Number(sessionid);
-       sessionidnumber = sessionidnumber + 1;
-       buffer.container[0].sessionid = sessionidnumber;
+       // console.log('SSID: '+ JSON.stringify(stateObject.state.Data.container[0].sessionid)); // dang string
+       // console.log('SSID2: '+ stateObject.state.Data.container[0].sessionid); // dang json
+       // sessionid = stateObject.state.Data.container[0].sessionid;
+       // sessionidnumber = Number(sessionid);
+       // sessionidnumber = sessionidnumber + 1;
+       // buffer.container[0].sessionid = sessionidnumber;
 
-       if(sessionid === null)
-         {
-           console.log("Error: SSID rong~");
-         }
        var data1,data2,data3;
-       if (stateObject.state.Data.sync.update != null ){
+       if (stateObject.state.Data.sync.update != 1 ){
            data1 = stateObject.state.Data.sync.room;
            data2 = stateObject.state.Data.sync.device;
-           data3 = stateObject.state.Data.sync.deviceid;
+           data3 = stateObject.state.Data.sync.iddevice;
 
            serialPort.write('@')
-           if (data1 == 'Bed Room') {
+           if (data1 == 'bedroom') {
              serialPort.write('B')
            }
-           if (data1 == 'Kitchen') {
+           if (data1 == 'kitchen') {
              serialPort.write('K')
            }
-           if (data1 == 'Living Room') {
+           if (data1 == 'livingroom') {
              serialPort.write('R')
            }
-           if (data2 == 'Light') {
+           if (data2 == 'light') {
              serialPort.write('L')
              serialPort.write(data3)
            }
-           if (data2 == 'Fan') {
+           if (data2 == 'fan') {
              serialPort.write('F')
              serialPort.write(data3)
            }
-           if (data2 == 'TV') {
+           if (data2 == 'tv') {
              serialPort.write('V')
              serialPort.write(data3)
            }
@@ -98,97 +118,52 @@ thingShadows.on('delta',
              clientTokenUpdate = thingShadows.update('Thang-Test', updatedevice);
            }
        else {
-          if(sessionid != local_sessionid) //Neu SSID Thay doi
-          {
+
             // convent
             serialPort.write('@')
+            for(var i = 0; stateObject.state.Data.container[i] != null ; i++){
 
-            if (stateObject.state.Data.container[0].device == 'Light') {
+            if (stateObject.state.Data.container[i].device == 'light') {
               serialPort.write('L')
-              serialPort.write(stateObject.state.Data.container[0].id)
+              serialPort.write(stateObject.state.Data.container[i].id)
             }
-            if (stateObject.state.Data.container[0].device == 'Fan') {
+            if (stateObject.state.Data.container[i].device == 'fan') {
               serialPort.write('F')
-              serialPort.write(stateObject.state.Data.container[0].id)
+              serialPort.write(stateObject.state.Data.container[i].id)
             }
-            if (stateObject.state.Data.container[0].device == 'TV') {
+            if (stateObject.state.Data.container[i].device == 'tv') {
               serialPort.write('V')
-              serialPort.write(stateObject.state.Data.container[0].id)
+              serialPort.write(stateObject.state.Data.container[i].id)
             }
-            if (stateObject.state.Data.container[0].room == 'Bed Room') {
+            if (stateObject.state.Data.container[i].room == 'bedroom') {
               serialPort.write('B')
             }
-            if (stateObject.state.Data.container[0].room == 'Kitchen') {
+            if (stateObject.state.Data.container[i].room == 'kitchen') {
               serialPort.write('K')
             }
-            if (stateObject.state.Data.container[0].room == 'Living Room') {
+            if (stateObject.state.Data.container[i].room == 'livingroom') {
               serialPort.write('R')
             }
-            if (stateObject.state.Data.container[0].action == 'Turn On') {
+            if (stateObject.state.Data.container[i].action == 'smarthome.device.switch.on') {
               serialPort.write('X')
             }
-            if (stateObject.state.Data.container[0].action == 'Turn Off') {
+            if (stateObject.state.Data.container[i].action == 'smarthome.device.switch.off') {
               serialPort.write('Y')
             }
-            if (stateObject.state.Data.container[0].mode == 'Auto') {
-              serialPort.write('A')
-            }
-            if (stateObject.state.Data.container[0].mode == 'SET') {
-              serialPort.write('S')
-            }
-              serialPort.write('x')
+            // if (stateObject.state.Data.container[i].mode == 'auto') {
+            //   serialPort.write('A')
+            // }
+            // if (stateObject.state.Data.container[i].mode == 'set') {
+            //   serialPort.write('S')
+            // }
 
-            //updat firmware
+          }
+            serialPort.write('x')
             console.log('OK');
-          }
-          else {
-            console.log('Error 2: SSID trung`');
-          }
-       }
-       // console.log('received delta on '+thingName+': '+
-       //             JSON.stringify(stateObject));
-    });
+        }
 
+});
 
-// /***********Set ID device**************/
-// thingShadows.on('delta',
-//       function(thingName, stateObject) {
-//
-// var data1,data2,data3;
-//
-//   if (stateObject.state.Data.sync.update != null ){
-//       data1 = stateObject.state.Data.sync.room;
-//       data2 = stateObject.state.Data.sync.device;
-//       data3 = stateObject.state.Data.sync.deviceid;
-//
-//       serialPort.write('@')
-//       if (data1 == 'Bed Room') {
-//         serialPort.write('B')
-//       }
-//       if (data1 == 'Kitchen') {
-//         serialPort.write('K')
-//       }
-//       if (data1 == 'Living Room') {
-//         serialPort.write('R')
-//       }
-//       if (data2 == 'Light') {
-//         serialPort.write('L')
-//         serialPort.write(data3)
-//       }
-//       if (data2 == 'Fan') {
-//         serialPort.write('F')
-//         serialPort.write(data3)
-//       }
-//       if (data2 == 'TV') {
-//         serialPort.write('V')
-//         serialPort.write(data3)
-//       }
-//   var updatedevice = {"state":{"desired":{"Data": sys}}}
-//     clientTokenUpdate = thingShadows.update('Thang-Test', updatedevice);
-//
-//
-//       }
-//   });
 // Nhan serial PORT tu device
   serialPort.on('open',onOpen);
   serialPort.on('data',onData);
@@ -197,15 +172,11 @@ thingShadows.on('delta',
     console.log("Open connected serialport");
   }
 
-
-  thingShadows.register('Thang-Test', {}, function () {
-  })
-
-  function onData(data){
+ function onData(data){
     //data = String(data);
     console.log('Data receive: '+data); // show buff nhan duoc
     //-----------------@L1OLS100----------------------------
-    var n = 8;
+    var n = 10;
     for (var i = 0; i < n; i++) {
       switch (String.fromCharCode(data[i])) {
         case '@':
@@ -216,7 +187,7 @@ thingShadows.on('delta',
 
           if (i == 1) {
             i++;
-            buffer.container[0].device = 'Fan';
+            buffer.container[0].device = 'fan';
             buffer.container[0].id=String.fromCharCode(data[i]);
             break;
           }
@@ -225,7 +196,7 @@ thingShadows.on('delta',
 
           if (i == 1) {
             i++;
-            buffer.container[0].device = 'Light';
+            buffer.container[0].device = 'light';
             buffer.container[0].id=String.fromCharCode(data[i]);
             break;
           }
@@ -233,56 +204,56 @@ thingShadows.on('delta',
 
           if (i == 1) {
             i++;
-            buffer.container[0].device = 'TV';
+            buffer.container[0].device = 'tv';
             buffer.container[0].id=String.fromCharCode(data[i]);
             break;
           }
 
         case 'B':
           if(i ==3){
-              buffer.container[0].room = 'Bed Room';
+              buffer.container[0].room = 'bedroom';
               break;
           }
         case 'K':
           if(i ==3){
-              buffer.container[0].room = 'Kitchen Room';
+              buffer.container[0].room = 'kitchenroom';
               break;
           }
         case 'R':
           if(i ==3){
-              buffer.container[0].room = 'Living Room';
+              buffer.container[0].room = 'livingroom';
               break;
               }
 
         case 'X':
           if(i ==4){
-              buffer.container[0].action = 'Turn On'; // 1 la bat
+              buffer.container[0].action = "smarthome.device.switch.on";
               break;
           }
         case 'Y':
           if(i ==4){
-              buffer.container[0].action = 'Turn Off'; // 0 la tat
+              buffer.container[0].action = "smarthome.device.switch.off";
               break;
           }
-        case 'S':
-          if(i ==5){
-              buffer.container[0].mode = 'SET';
-              for( i = 6; i< 9; i++)
-              {
-                buffer.container[0].lux=String.fromCharCode(data[6])+String.fromCharCode(data[7])+String.fromCharCode(data[8]);
-              }
-              break;
-          }
-        case 'A':
-          if(i ==5){
-              buffer.container[0].mode = 'Auto';
-              for( i = 6; i< 9; i++)
-              {
-                buffer.container[0].lux=String.fromCharCode(data[6])+String.fromCharCode(data[7])+String.fromCharCode(data[8]);
-              }
-
-              break;
-          }
+        // case 'S':
+        //   if(i ==5){
+        //       buffer.container[0].mode = 'set';
+        //       for( i = 6; i< 9; i++)
+        //       {
+        //         buffer.container[0].lux=String.fromCharCode(data[6])+String.fromCharCode(data[7])+String.fromCharCode(data[8]);
+        //       }
+        //       break;
+        //   }
+        // case 'A':
+        //   if(i ==5){
+        //       buffer.container[0].mode = 'auto';
+        //       for( i = 6; i< 9; i++)
+        //       {
+        //         buffer.container[0].lux=String.fromCharCode(data[6])+String.fromCharCode(data[7])+String.fromCharCode(data[8]);
+        //       }
+        //
+        //       break;
+        //   }
 
         default:
           i = n - 1;
