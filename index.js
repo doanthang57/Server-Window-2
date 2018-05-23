@@ -16,7 +16,7 @@ var thingShadows = awsIot.thingShadow({
 
 });
 
-var seri = "0 "
+var seri = "0"
 var i = 0;
 var sys = {
   "sync": {
@@ -88,68 +88,46 @@ thingShadows.on('delta',
 
        var data1,data2,data3;
        if (stateObject.state.Data.sync.update != 1 ){
-           data1 = stateObject.state.Data.sync.room;
-           data2 = stateObject.state.Data.sync.device;
-           data3 = stateObject.state.Data.sync.iddevice;
+           seri  = stateObject.state.Data.sync.seri;
 
-           serialPort.write('@')
-           if (data1 == 'bedroom') {
-             serialPort.write('B')
-           }
-           if (data1 == 'kitchen') {
-             serialPort.write('K')
-           }
-           if (data1 == 'livingroom') {
-             serialPort.write('R')
-           }
-           if (data2 == 'light') {
-             serialPort.write('L')
-             serialPort.write(data3)
-           }
-           if (data2 == 'fan') {
-             serialPort.write('F')
-             serialPort.write(data3)
-           }
-           if (data2 == 'tv') {
-             serialPort.write('V')
-             serialPort.write(data3)
-           }
+           serialPort.write('@S')
+           serialPort.write(seri)
+           serialPort.write('x')
          var updatedevice = {"state":{"desired":{"Data": sys}}}
              clientTokenUpdate = thingShadows.update('Thang-Test', updatedevice);
            }
        else {
-
             // convent
-            serialPort.write('@')
-            for(var i = 0; stateObject.state.Data.container[i] != null ; i++){
+              serialPort.write('@')
+              for(var i = 0; stateObject.state.Data.container[i] != null ; i++){
 
-            if (stateObject.state.Data.container[i].device == 'light') {
-              serialPort.write('L')
-              serialPort.write(stateObject.state.Data.container[i].id)
-            }
-            if (stateObject.state.Data.container[i].device == 'fan') {
-              serialPort.write('F')
-              serialPort.write(stateObject.state.Data.container[i].id)
-            }
-            if (stateObject.state.Data.container[i].device == 'tv') {
-              serialPort.write('V')
-              serialPort.write(stateObject.state.Data.container[i].id)
-            }
-            if (stateObject.state.Data.container[i].room == 'bedroom') {
-              serialPort.write('B')
-            }
-            if (stateObject.state.Data.container[i].room == 'kitchen') {
-              serialPort.write('K')
-            }
-            if (stateObject.state.Data.container[i].room == 'livingroom') {
-              serialPort.write('R')
-            }
-            if (stateObject.state.Data.container[i].action == 'smarthome.device.switch.on') {
-              serialPort.write('X')
-            }
-            if (stateObject.state.Data.container[i].action == 'smarthome.device.switch.off') {
-              serialPort.write('Y')
-            }
+              if (stateObject.state.Data.container[i].device == 'light') {
+                serialPort.write('L')
+                serialPort.write(stateObject.state.Data.container[i].id)
+              }
+              if (stateObject.state.Data.container[i].device == 'fan') {
+                serialPort.write('F')
+                serialPort.write(stateObject.state.Data.container[i].id)
+              }
+              if (stateObject.state.Data.container[i].device == 'tv') {
+                serialPort.write('V')
+                serialPort.write(stateObject.state.Data.container[i].id)
+              }
+              if (stateObject.state.Data.container[i].room == 'bedroom') {
+                serialPort.write('B')
+              }
+              if (stateObject.state.Data.container[i].room == 'kitchen') {
+                serialPort.write('K')
+              }
+              if (stateObject.state.Data.container[i].room == 'livingroom') {
+                serialPort.write('R')
+              }
+              if (stateObject.state.Data.container[i].action == 'smarthome.device.switch.on') {
+                serialPort.write('X')
+              }
+              if (stateObject.state.Data.container[i].action == 'smarthome.device.switch.off' ) {
+                serialPort.write('Y')
+              }
             // if (stateObject.state.Data.container[i].mode == 'auto') {
             //   serialPort.write('A')
             // }
@@ -176,7 +154,7 @@ thingShadows.on('delta',
     //data = String(data);
     console.log('Data receive: '+data); // show buff nhan duoc
     //-----------------@L1OLS100----------------------------
-    var n = 10;
+    var n = 5;
     for (var i = 0; i < n; i++) {
       switch (String.fromCharCode(data[i])) {
         case '@':
@@ -186,8 +164,8 @@ thingShadows.on('delta',
         case 'F':
 
           if (i == 1) {
-            i++;
             buffer.container[0].device = 'fan';
+            i++;
             buffer.container[0].id=String.fromCharCode(data[i]);
             break;
           }
@@ -195,16 +173,16 @@ thingShadows.on('delta',
         case 'L':
 
           if (i == 1) {
-            i++;
             buffer.container[0].device = 'light';
+            i++;
             buffer.container[0].id=String.fromCharCode(data[i]);
             break;
           }
         case 'V':
 
           if (i == 1) {
-            i++;
             buffer.container[0].device = 'tv';
+            i++;
             buffer.container[0].id=String.fromCharCode(data[i]);
             break;
           }
@@ -216,7 +194,7 @@ thingShadows.on('delta',
           }
         case 'K':
           if(i ==3){
-              buffer.container[0].room = 'kitchenroom';
+              buffer.container[0].room = 'kitchen';
               break;
           }
         case 'R':

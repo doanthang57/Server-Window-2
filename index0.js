@@ -11,7 +11,39 @@ var thingShadows = awsIot.thingShadow({
       host: 'aupu5tnzgckec.iot.ap-southeast-1.amazonaws.com'
 
 });
-
+var buffer =
+  {
+  "desired": {
+    "welcome": "aws-iot",
+    "Data": {
+      "container": [
+        {
+          "device": "light",
+          "room": "kitchen",
+          "iddevice": "2",
+          "action": "smarthome.device.switch.on",
+          "id": "3"
+        },
+        {
+          "device": "light",
+          "room": "kitchen",
+          "iddevice": "2",
+          "action": "smarthome.lights.switch.on",
+          "id": "3"
+        },
+        {
+          "device": "light",
+          "room": "kitchen",
+          "iddevice": "1",
+          "action": "smarthome.lights.switch.on",
+          "id": "4"
+        }
+      ],
+      "sync": {
+        "update": 1
+      }
+    }
+  }
 thingShadows.on('connect', function () {
     console.log("Connected...");
     thingShadows.register(thingName);
