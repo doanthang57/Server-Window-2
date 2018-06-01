@@ -40,3 +40,12 @@ function onData(data) {
     console.log('Update');
   }
 }
+// if(String.fromCharCode(data[2]) == '1'){
+//   buffer.container[0].id=String.fromCharCode(data[i]);
+// }
+// if(String.fromCharCode(data[2]) == '2'){
+//   buffer.container[1].id=String.fromCharCode(data[i]);
+// }
+// if(String.fromCharCode(data[2]) == '3'){
+//   buffer.container[2].id=String.fromCharCode(data[i]);
+// }

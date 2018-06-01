@@ -1,6 +1,6 @@
 var awsIot = require('aws-iot-device-sdk');
 var SerialPort = require("serialport");
-var serialPort = new SerialPort("COM14", { baudRate: 115200 });
+var serialPort = new SerialPort("COM1", { baudRate: 115200 });
 
 
 var clientTokenUpdate;
@@ -20,56 +20,29 @@ var seri = "0"
 var i = 0;
 var sys = {
   "sync": {
-    "update":null,
+    "update":1,
     "room": null,
     "device":null,
     "deviceid":null
   }
 }
 var buffer = null;
-//        {
-//       "container": [{
-//         "action": "turnon",
-//         "deviceid": "light",
-//         "device":"1",
-//         "id": "01",
-//         "room": "livingroom",
-//         "mode": "set",
-//         "sessionid": "01",
-//         "lux": "100",
-//         "all": 1
-//     },
-//       {
-//         "action": "turn on",
-//         "device": "light",
-//         "device":"1",
-//         "id": "01",
-//         "room": "living room",
-//         "mode": "set",
-//         "sessionid": "01",
-//         "lux": "100",
-//         "all": 1
-//       },
-//       {
-//         "action": "turn on",
-//         "device": "light",
-//         "device":"1",
-//         "id": "01",
-//         "room": "living room",
-//         "mode": "set",
-//         "sessionid": "01",
-//         "lux": "100",
-//         "all": 1
-//       }
-//     ],
-//     "sync":
-//     {
-//       "update" = 1
-//     }
-// }
+var iot = {
+    "update_iot":null
+  }
 //**************lang nghe thingShadow********************
 thingShadows.register('Thang-Test', {}, function () {
+  var receive_iot = {"state":{"desired":{"Data": iot}}}
+  iot_data = thingShadows.update('Thang-Test', receive_iot);
+  if (iot_data === null)
+  {
+    console.log('Update iot error');
+  }
+  else {
+    console.log('Update iot successfull');
+  }
 });
+
 
 thingShadows.on('delta',
       function(thingName, stateObject) {
@@ -122,10 +95,10 @@ thingShadows.on('delta',
               if (stateObject.state.Data.container[i].room == 'livingroom') {
                 serialPort.write('R')
               }
-              if (stateObject.state.Data.container[i].action == 'smarthome.device.switch.on') {
+              if (stateObject.state.Data.container[i].action == 'smarthome.device.switch.on'||stateObject.state.Data.container[i].action == 'smarthome.lights.switch.on') {
                 serialPort.write('X')
               }
-              if (stateObject.state.Data.container[i].action == 'smarthome.device.switch.off' ) {
+              if (stateObject.state.Data.container[i].action == 'smarthome.device.switch.off'||stateObject.state.Data.container[i].action == 'smarthome.lights.switch.off' ) {
                 serialPort.write('Y')
               }
             // if (stateObject.state.Data.container[i].mode == 'auto') {
@@ -164,18 +137,40 @@ thingShadows.on('delta',
         case 'F':
 
           if (i == 1) {
-            buffer.container[0].device = 'fan';
+
             i++;
-            buffer.container[0].id=String.fromCharCode(data[i]);
+            if(String.fromCharCode(data[2]) == '1'){
+              buffer.container[0].id=String.fromCharCode(data[i]);
+              buffer.container[0].device = 'fan';
+            }
+            if(String.fromCharCode(data[2]) == '2'){
+              buffer.container[1].id=String.fromCharCode(data[i]);
+              buffer.container[1].device = 'fan';
+            }
+            if(String.fromCharCode(data[2]) == '3'){
+              buffer.container[2].id=String.fromCharCode(data[i]);
+              buffer.container[2].device = 'fan';
+            }
             break;
           }
 
         case 'L':
 
           if (i == 1) {
-            buffer.container[0].device = 'light';
+
             i++;
-            buffer.container[0].id=String.fromCharCode(data[i]);
+            if(String.fromCharCode(data[2]) == '1'){
+              buffer.container[0].id=String.fromCharCode(data[i]);
+              buffer.container[0].device = 'light';
+            }
+            if(String.fromCharCode(data[2]) == '2'){
+              buffer.container[1].id=String.fromCharCode(data[i]);
+              buffer.container[1].device = 'light';
+            }
+            if(String.fromCharCode(data[2]) == '3'){
+              buffer.container[2].id=String.fromCharCode(data[i]);
+              buffer.container[2].device = 'light';
+            }
             break;
           }
         case 'V':
@@ -183,7 +178,18 @@ thingShadows.on('delta',
           if (i == 1) {
             buffer.container[0].device = 'tv';
             i++;
-            buffer.container[0].id=String.fromCharCode(data[i]);
+            if(String.fromCharCode(data[2]) == '1'){
+              buffer.container[0].id=String.fromCharCode(data[i]);
+              buffer.container[0].device = 'tv';
+            }
+            if(String.fromCharCode(data[2]) == '2'){
+              buffer.container[1].id=String.fromCharCode(data[i]);
+              buffer.container[1].device = 'tv';
+            }
+            if(String.fromCharCode(data[2]) == '3'){
+              buffer.container[2].id=String.fromCharCode(data[i]);
+              buffer.container[2].device = 'tv';
+            }
             break;
           }
 
