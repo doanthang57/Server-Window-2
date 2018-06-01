@@ -176,7 +176,7 @@ thingShadows.on('delta',
         case 'V':
 
           if (i == 1) {
-            buffer.container[0].device = 'tv';
+
             i++;
             if(String.fromCharCode(data[2]) == '1'){
               buffer.container[0].id=String.fromCharCode(data[i]);
@@ -211,12 +211,28 @@ thingShadows.on('delta',
 
         case 'X':
           if(i ==4){
+              if(String.fromCharCode(data[2]) == '1'){
               buffer.container[0].action = "smarthome.device.switch.on";
+            }
+              if(String.fromCharCode(data[2]) == '2'){
+              buffer.container[1].action = "smarthome.device.switch.on";
+            }
+              if(String.fromCharCode(data[2]) == '3'){
+              buffer.container[2].action = "smarthome.device.switch.on";
+            }
               break;
           }
         case 'Y':
           if(i ==4){
+              if(String.fromCharCode(data[2]) == '1'){
               buffer.container[0].action = "smarthome.device.switch.off";
+            }
+              if(String.fromCharCode(data[2]) == '2'){
+              buffer.container[1].action = "smarthome.device.switch.off";
+            }
+              if(String.fromCharCode(data[2]) == '3'){
+              buffer.container[2].action = "smarthome.device.switch.off";
+            }
               break;
           }
         // case 'S':
